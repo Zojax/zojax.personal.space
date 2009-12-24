@@ -1,0 +1,5 @@
+<a tal:attributes="href string:${view/home/@@absolute_url}/"
+   i18n:translate="" i18n:domain="zojax.personal.space">
+  Personal space
+</a>
+

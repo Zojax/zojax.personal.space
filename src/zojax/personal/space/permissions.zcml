@@ -1,0 +1,32 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.personal.space">
+
+  <permission
+     id="zojax.PersonalSpace"
+     title="Personal space"
+     description="Member with this permission will have personal space." />
+
+  <permission
+     id="zojax.ManageSpaceManager"
+     title="Manage space manager" />
+
+  <permission
+     id="zojax.ManagePersonalSpace"
+     title="Manage personal space" />
+
+  <grant
+     role="content.Owner"
+     permission="zojax.ManagePersonalSpace" />
+
+  <interface
+     name="Personal space"
+     interface=".interfaces.IPersonalPermission"
+     type="zojax.content.permissions.interfaces.IPermissionCategoryType" />
+
+  <zojax:permission
+     permission="zojax.PersonalSpace"
+     category=".interfaces.IPersonalPermission" />
+
+</configure>

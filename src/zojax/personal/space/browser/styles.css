@@ -1,0 +1,43 @@
+/* zrt-cssregistry: */
+
+@media all {
+
+  .personalspace-manager {
+  }
+
+  .personalspace-search {
+    padding-left: 0.5em;
+    padding-bottom: 1em;
+  }
+
+  .personalspace-memberinfo { 
+    float: left;
+    height: 150px;
+    padding: 0.5em;
+    margin: 0 0.5em 1em 0.5em;
+    text-align: center;
+    border: borderWidth borderStyleAnnotations globalBorderColor;
+  }
+
+  .personalspace-memberinfo dt {
+    padding-bottom: 0.25em;
+  }
+
+  .personalspace-memberinfo dd a:visited {
+    color: linkColor;
+  }
+  
+  .personalspace-memberinfo dd { 
+    white-space: normal;
+    width: 130px;
+    height: 4em;
+    overflow: hidden;
+    font-size: 80%;
+  }
+
+  .personalspace-memberinfo dd div {
+    font-size: 120%;
+    font-weight: bold;
+  }
+
+}

@@ -1,0 +1,95 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zcml="http://namespaces.zope.org/zcml"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zojax.personal.space">
+
+  <include file="portletmanager.zcml" />
+
+  <!-- content space workspaces -->
+  <zojax:pagelet
+     name="workspaces"
+     type="wizard.step"
+     for="..interfaces.IPersonalWorkspacesManagement
+          zojax.content.forms.interfaces.IEditContentWizard"
+     class=".workspace.WorkspacesManagement"
+     permission="zojax.ModifyContent"
+     weight="110" />
+
+  <!-- personal space -->
+  <browser:defaultView
+     name="index.html"
+     for="..interfaces.IPersonalSpace" />
+
+  <zojax:pagelet
+     name="index.html"
+     for="..interfaces.IPersonalSpace"
+     template="space.pt"
+     class=".space.PersonalSpace"
+     permission="zope.Public" />
+
+  <adapter factory=".breadcrumb.PersonalSpaceBreadcrumb" />
+
+  <!-- personal workspace preferences -->
+  <zojax:pagelet
+     type="preference.editGroup"
+     for="..interfaces.IPersonalSpaceSettings"
+     class=".preference.PersonalSpaceSettings" />
+
+  <adapter factory=".preference.ContentNameValidator" />
+
+  <!-- space manager view -->
+  <browser:defaultView
+     name="index.html"
+     for="..interfaces.IPersonalSpaceManager" />
+
+  <zojax:pagelet
+     name="index.html"
+     for="zojax.personal.space.interfaces.IPersonalSpaceManager"
+     template="people.pt"
+     class=".people.PeopleView"
+     permission="zope.View" />
+
+  <!-- personal bar -->
+  <browser:viewlet
+     name="personal.space"
+     manager="zojax.personal.bar.interfaces.IPersonalBar"
+     template="personalbar.pt"
+     class=".personalbar.PersonalSpaceMenuItem"
+     permission="zope.Public"
+     zcml:condition="installed zojax.personal.bar" />
+
+  <!-- icons -->
+  <browser:icon
+     name="zmi_icon"
+     for="zojax.content.personal_space"
+     file="user.png" />
+
+  <browser:icon
+     name="zmi_icon"
+     for="..interfaces.IPersonalSpace"
+     file="user.png" />
+
+  <browser:icon
+     name="zmi_icon"
+     for="zojax.content.personal_spaces"
+     file="users.png" />
+
+  <browser:icon
+     name="zmi_icon"
+     for="..interfaces.IPersonalSpaceManager"
+     file="users.png" />
+
+  <browser:icon
+     name="zmi_icon"
+     for="..interfaces.IPersonalSpaceManagerWorkspace"
+     file="users.png" />
+
+  <!-- styles -->
+  <zojax:resourceinclude
+     name="zojax-personal-space.css"
+     file="styles.css" 
+     library="zojax" type="stylesheet" filetype="zrt" />
+
+</configure>

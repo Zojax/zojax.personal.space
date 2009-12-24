@@ -1,0 +1,441 @@
+=============
+Browser tests
+=============
+
+    >>> from zope import component, interface, event
+    >>> from zope.interface import verify
+    >>> from zope.testbrowser.testing import Browser
+    >>> from zope.lifecycleevent import ObjectCreatedEvent
+    >>> from zope.lifecycleevent import ObjectModifiedEvent
+    >>> from zope.app.testing.functional import getRootFolder
+    >>> from zope.app.component.hooks import setSite
+    >>> from zope.app.intid import IntIds
+    >>> from zope.app.intid.interfaces import IIntIds
+    >>> from zope.app.security.interfaces import IAuthentication
+    >>> from zojax.catalog.catalog import Catalog
+    >>> from zojax.catalog.interfaces import ICatalog
+
+    >>> from zojax.personal.space import interfaces
+    >>> from zojax.personal.space.space import PersonalSpace
+    >>> from zojax.personal.space.manager import PersonalSpaceManager
+    >>> from zojax.personal.space.interfaces import IPersonalSpaceManager
+    >>> from zojax.personal.space.tests.tests import getPath
+    >>> from zojax.personal.space.workspace import PersonalSpaceManagerWorkspace
+
+    >>> root = getRootFolder()
+    >>> setSite(root)
+
+    >>> root['ids'] = IntIds()
+    >>> root.getSiteManager().registerUtility(root['ids'], IIntIds)
+    >>> auth = component.getUtility(IAuthentication)
+
+    >>> root['catalog'] = Catalog()
+    >>> root.getSiteManager().registerUtility(root['catalog'], ICatalog)
+
+Create home folder manager
+
+    >>> manager = PersonalSpaceManager(title=u'People')
+    >>> event.notify(ObjectCreatedEvent(manager))
+    >>> root['people'] = manager
+    >>> root['people'].assignPersonalSpace(auth.getPrincipal('zope.user'))
+    >>> root.getSiteManager().registerUtility(root['people'], IPersonalSpaceManager)
+
+Admin browser
+
+    >>> admin = Browser()
+    >>> admin.addHeader("Authorization", "Basic mgr:mgrpw")
+    >>> admin.handleErrors = False
+
+    >>> user = Browser()
+    >>> user.addHeader("Authorization", "Basic user:userpw")
+    >>> user.handleErrors = False
+
+Principal events
+----------------
+
+    >>> from zojax.principal.registration.interfaces import PrincipalRegisteredEvent
+    >>> principal = auth.getPrincipal('zope.user')
+
+Principal registration event
+
+    >>> event.notify(PrincipalRegisteredEvent(principal))
+
+Principal login event
+
+    >>> from zojax.authentication.interfaces import PrincipalLoggedInEvent
+    >>> event.notify(PrincipalLoggedInEvent(principal))
+
+
+Browsing 'People'
+-----------------
+
+    >>> user.open('http://localhost/people/')
+    >>> print user.contents
+    <html>
+    ...
+    <div class="personalspace-memberinfo">
+      <dl>
+         <dt>
+            <a href="http://localhost/people/user/" title="User">
+              <img width="128" height="98" src="http://localhost/@@/profileEmptyImage.png" />
+            </a>
+         </dt>
+         <dd>
+            <div>
+               <a href="http://localhost/people/user/" title="">User</a>
+            </div>
+            Joined on
+            ...
+         </dd>
+      </dl>
+    </div>...
+    ...
+    </html>
+
+
+Personal workspace manager, it contains of pluggable workspaces, we
+use profile workspace as default
+
+    >>> user.getLink('User').click()
+    >>> print user.contents
+    <html>
+    ...
+    <div id="z-space">
+      <div class="z-space-header">
+        <h1>My personal space</h1>
+      </div>
+      <div class="z-space-views-wrapper">
+        <div class="z-space-views">
+          <ul>
+            <li class="selected">
+              <a href="http://localhost/people/user/profile/">
+                 <img ...>
+                 Personal Profile</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    ...
+    </html>
+
+To create new workspace we need register workspace factory, which will
+create workspace on demand.
+
+    >>> from zojax.personal.space.tests.workspace import TestWorkspaceFactory
+    >>> root.getSiteManager().registerAdapter(TestWorkspaceFactory, name='test')
+
+    >>> user.reload()
+    >>> print user.contents
+    <html>
+    ...
+    <div class="z-space-views">
+       <ul>
+          <li class="selected">
+            <a href="http://localhost/people/user/profile/">
+               <img .../>
+               Personal Profile</a>
+          </li>
+          <li class="">
+            <a href="http://localhost/people/user/test/">
+               Test workspace</a>
+          </li>
+       </ul>
+    </div>
+    ...
+    </html>
+
+    >>> from zojax.personal.space.tests.workspace import TestWorkspaceFactory
+    >>> root.getSiteManager().registerAdapter(TestWorkspaceFactory, name='test')
+
+Manager checks isAvailable factory's method. let's register workspace
+that is not available.
+
+    >>> from zojax.personal.space.tests.workspace import TestWorkspaceFactory2
+    >>> root.getSiteManager().registerAdapter(TestWorkspaceFactory2, name='test2')
+
+    >>> TestWorkspaceFactory2(None).isAvailable()
+    False
+
+    >>> user.reload()
+    >>> print user.contents
+    <html>
+    ...
+    <div class="z-space-views">
+       <ul>
+          <li class="selected">
+            <a href="http://localhost/people/user/profile/">
+               <img .../>
+               Personal Profile</a>
+          </li>
+          <li class="">
+            <a href="http://localhost/people/user/test/">
+               Test workspace</a>
+          </li>
+       </ul>
+    </div>
+    ...
+    </html>
+
+    >>> user.getLink('Test workspace').click()
+    >>> user.url
+    'http://localhost/people/user/test/'
+
+    >>> print user.contents
+    <html>
+    ...<div class="z-testworkspace-body">
+      Yoy are in test workspace.
+    </div>...
+    ...
+    </html>
+
+
+Worksapce manager preference
+----------------------------
+
+We can change title and description of our workspace manager, and it's
+id.
+
+    >>> user.open('http://localhost/people/user/profile/personalspace/')
+    >>> user.getControl('Title').value = "Nikolay's workspace"
+    >>> user.getControl('Short Name').value = '@@@aaaadsdfd'
+    >>> user.getControl('Save').click()
+
+    >>> 'Please fix indicated errors.' in user.contents
+    True
+
+    >>> user.getControl('Short Name').value = 'nkim'
+    >>> user.getControl('Save').click()
+
+    >>> user.url
+    'http://localhost/people/nkim/profile/personalspace/'
+
+Anonymous access
+----------------
+
+    >>> anon = Browser()
+    >>> anon.handleErrors = False
+    >>> anon.open('http://localhost/people/nkim/')
+    >>> print anon.contents
+    <html>
+    ...
+    <div class="z-prefs-content"><table class="z-quickinfo">
+      <tr>
+        <td class="z-user-image">
+          <img src="http://localhost/@@profile.photo/zope.user" />
+        </td>
+        <td>
+          <span class="z-user-title">User</span>
+          <div class="z-ws-profile-quickinfo">
+      <table>
+        <tr>
+          <td class="quickinfo-title">Member Since:</td>
+          <td>...</td>
+        </tr>
+        <tr>
+          <td class="quickinfo-title">Last Logged In:</td>
+          <td>...</td>
+        </tr>
+      </table>
+    </div>
+    ...
+    </html>
+
+    >>> user.getControl(
+    ...     name="personalspace.widgets.anonymous:list").value = ['false']
+    >>> user.getControl('Save').click()
+
+    >>> anon.reload()
+    >>> print anon.contents
+    <html>
+    ...
+    <div class="z-content-body">
+       You don't have permission to view member's personal space.
+       <br /><br />
+       <a href="../">Back to members listing</a>
+    </div>
+    ...
+    </html>
+
+Personal photo
+--------------
+We can change profile photo, people's listing will use it
+
+    >>> user.open('http://localhost/people/nkim/profile/profile/')
+    >>> fileControl = user.getControl('Profile image').mech_control
+    >>> fileControl.add_file(open(getPath('image.jpg')), filename='image.jpg')
+    >>> user.getControl('Timezone').value = ['Asia/Almaty']
+    >>> user.getControl(name="form.buttons.save").click()
+
+    >>> user.open('http://localhost/people/')
+    >>> print user.contents
+    <html>
+    ...
+    <div class="personalspace-memberinfo">
+      <dl>
+        <dt>
+          <a href="http://localhost/people/nkim/" title="Nikolay's workspace">
+            <img width="128" height="96" src="..." />
+          </a>
+        </dt>
+        <dd>
+          <div>
+            <a href="http://localhost/people/nkim/" title="">User</a>
+          </div>
+          Joined on
+          ...
+        </dd>
+      </dl>
+    </div>...
+    ...
+    </html>
+
+
+Search people
+-------------
+
+    >>> anon.open('http://localhost/people/')
+    >>> anon.getControl(name='form.searchText').value = 'Nikolay'
+    >>> anon.getControl(name='form.search').click()
+
+    >>> print anon.contents
+    <html>
+    ...
+    <div class="personalspace-memberinfo">
+      <dl>
+        <dt>
+          <a href="http://localhost/people/nkim/" title="Nikolay's workspace">
+            <img width="128" height="96" src="..." />
+          </a>
+        </dt>
+        <dd>
+          <div>
+            <a href="http://localhost/people/nkim/" title="">User</a>
+          </div>
+          Joined on
+          ...
+        </dd>
+      </dl>
+    </div>
+    ...
+    </html>
+
+    >>> anon.getControl(name='form.search.clear').click()
+
+
+    >>> user.getControl('Search for a person').click()
+    >>> 'Please enter one or more words for search.' in user.contents
+    True
+
+    >>> user.getControl(name="form.searchText").value = '&'
+    >>> user.getControl('Search for a person').click()
+
+    >>> "ParseError" in user.contents
+    True
+
+
+We have workspaces settings for personal spaces
+-----------------------------------------------
+
+    >>> admin.open('http://localhost/people/context.html')
+    >>> admin.getLink('Workspaces').click()
+    >>> admin.getControl(name="workspaces.widgets.workspaces:list").value = [
+    ...     "profile"]
+    >>> admin.getControl(name="content.edit.buttons.save").click()
+    >>> admin.open('http://localhost/people/nkim/')
+    >>> print admin.contents
+    <html>
+    ...
+    <div class="z-space-views">
+          <ul>
+      <li class="selected">
+        <a href="http://localhost/people/nkim/profile/">
+          <img src="http://localhost/@@/zojax-personal-profile-interfaces-IProfileWorkspaceFactory-zmi_icon.png" />
+          Personal Profile</a>
+      </li>
+          </ul>
+        </div>
+    ...
+    </html>
+
+
+Workspace ordering
+
+    >>> admin.open('http://localhost/people/context.html')
+    >>> admin.getLink('Workspaces').click()
+    >>> admin.getControl(name="workspaces.widgets.workspaces:list").value = [
+    ...     'test', 'profile']
+    >>> admin.getControl(name="content.edit.buttons.save").click()
+    >>> admin.open('?workspaces.widgets.workspaces:list=test&workspaces.widgets.workspaces:list=profile&workspaces.widgets.enabledWorkspaces:list=test&workspaces.widgets.enabledWorkspaces:list=profile&content.edit.buttons.save=value')
+    >>> admin.getControl(name='workspaces.widgets.enabledWorkspaces.to').options
+    ['test', 'profile']
+    >>> admin.open('http://localhost/people/nkim/')
+    >>> print admin.contents
+    <html>
+    ...
+    <div class="z-space-views">
+          <ul>
+      <li class="">
+        <a href="http://localhost/people/nkim/test/">
+          Test workspace</a>
+      </li> <li class="selected">
+        <a href="http://localhost/people/nkim/profile/">
+          <img src="http://localhost/@@/zojax-personal-profile-interfaces-IProfileWorkspaceFactory-zmi_icon.png" />
+          Personal Profile</a>
+      </li>
+          </ul>
+        </div>
+    ...
+    </html>
+
+Default workspace
+
+    >>> admin.open('http://localhost/people/context.html')
+    >>> admin.getLink('Workspaces').click()
+    >>> admin.getControl(name="workspaces.widgets.defaultWorkspace:list").value = [
+    ...     'test']
+    >>> admin.getControl(name="content.edit.buttons.save").click()
+
+    >>> admin.open('http://localhost/people/nkim/')
+    >>> admin.url
+    'http://localhost/people/nkim/test/'
+
+
+Portlets manager
+
+    >>> admin.open('http://localhost/people/context.html')
+    >>> admin.getLink('Presentation').click()
+    >>> admin.getLink('Profile left column').click()
+    >>> admin.open('http://localhost/people/context.html/presentation/ppm-profile-columns.left/?form.widgets.portletIds:list=workspace.profile.settings&form.widgets.status:list=1&form.buttons.save=Save')
+
+    >>> 'Data successfully updated' in admin.contents
+    True
+
+    >>> admin.open('http://localhost/people/context.html/presentation/ppm-profile-columns.left-unknown')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...
+
+    >>> admin.open('http://localhost/people/context.html/presentation/m-profile-columns.left')
+    Traceback (most recent call last):
+    ...
+    NotFound: ...
+
+    >>> user.open('http://localhost/people/nkim/profile/')
+    >>> print user.contents
+    <html>
+    ...
+    <td id="space-column-one">
+    ...
+    <h2 class="z-portlet-header">Profile settings</h2>
+    ...
+    <td id="space-column-two">
+    ...
+    <h2 class="z-portlet-header">Profile settings</h2>
+    ...
+    </html>
+
+
+Cleanup
+
+    >>> setSite(None)
+

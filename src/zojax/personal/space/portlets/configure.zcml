@@ -1,0 +1,28 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zojax.personal.space">
+
+  <!-- portlet managers -->
+  <zojax:portletManager
+     name="columns.left"
+     for="..interfaces.IPersonalSpace"
+     title="Personal space left column"
+     schema=".interfaces.ISpaceLeftPortletManager" />
+
+  <zojax:portletManager
+     name="columns.right"
+     for="..interfaces.IPersonalSpace"
+     title="Personal space right column"
+     schema=".interfaces.ISpaceRightPortletManager" />
+
+  <!-- actions portlet -->
+  <zojax:portlet
+     title="Actions"
+     description="Listing of context actions."
+     name="portlet.actions"
+     type="..interfaces.IPersonalWorkspacePortlet"
+     class="zojax.content.actions.portlet.ActionsPortlet" />
+
+</configure>

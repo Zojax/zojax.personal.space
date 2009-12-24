@@ -1,0 +1,138 @@
+=============
+Browser tests
+=============
+
+    >>> from zope.interface import verify, alsoProvides
+    >>> from zope.app.testing.functional import getRootFolder
+    >>> from zope.app.component.hooks import setSite
+    >>> from zope.app.intid import IntIds
+    >>> from zope.app.intid.interfaces import IIntIds
+    >>> from zope.app.security.interfaces import IAuthentication
+    >>> from zope.publisher.browser import TestRequest
+    >>> from zope.securitypolicy.interfaces import IPrincipalPermissionManager
+    >>> from zope.security.management import newInteraction, endInteraction
+    
+    >>> from zojax.personal.space import interfaces
+    >>> from zojax.personal.space.space import PersonalSpace
+    >>> from zojax.personal.space.manager import PersonalSpaceManager
+    >>> from zojax.personal.space.interfaces import IPersonalSpaceManager
+    >>> from zojax.personal.space.workspace import PersonalSpaceManagerWorkspace
+
+    >>> root = getRootFolder()
+    >>> setSite(root)
+    >>> sm = root.getSiteManager()
+    >>> auth = sm.getUtility(IAuthentication)
+    >>> request = TestRequest()
+
+    >>> root['ids'] = IntIds()
+    >>> sm.registerUtility(root['ids'], IIntIds)
+
+    >>> newInteraction()
+
+Workspace factory
+-----------------
+
+    >>> factory = PersonalSpaceManagerWorkspace(getRootFolder())
+    >>> print factory.isInstalled()
+    False
+
+    >>> print factory.isAvailable()
+    True
+
+    >>> factory.title
+    u'People'
+
+    >>> sm.getUtility(IPersonalSpaceManager)
+    Traceback (most recent call last):
+    ...
+    ComponentLookupError: (<...IPersonalSpaceManager>, u'')
+
+    >>> manager = factory.install()
+    >>> IPersonalSpaceManager.providedBy(manager)
+    True
+
+    >>> root['people'] is manager
+    True
+
+    >>> sm.getUtility(IPersonalSpaceManager)
+    <zojax.personal.space.manager.PersonalSpaceManager ...>
+
+    >>> root['people'].title = u'Team'
+
+    >>> factory.title
+    u'Team'
+
+
+Assign user
+-----------
+
+    >>> principal = auth.getPrincipal('zope.user')
+    >>> root['people'].assignPersonalSpace(principal)
+
+
+Verify contract implementation
+------------------------------
+
+    >>> verify.verifyClass(IPersonalSpaceManager, PersonalSpaceManager)
+    True
+
+    >>> verify.verifyObject(IPersonalSpaceManager, root['people'])
+    True
+
+    >>> verify.verifyClass(interfaces.IPersonalSpace, PersonalSpace)
+    True
+
+    >>> verify.verifyObject(interfaces.IPersonalSpace, manager['user'])
+    True
+
+
+Reassign user
+-------------
+
+    >>> from zojax.ownership.interfaces import IOwnership
+
+    >>> space = root['people']['user']
+    >>> IOwnership(space).owner = auth.getPrincipal('zope.mgr')
+
+    >>> root['people'].assignPersonalSpace(principal)
+
+    >>> IOwnership(space).ownerId
+    'zope.user'
+
+
+Breadcumb
+---------
+
+    >>> from zope.i18n import translate
+    >>> from z3c.breadcrumb.interfaces import IBreadcrumb
+
+my space
+
+    >>> request.setPrincipal(principal)
+    >>> crumb = sm.getMultiAdapter((manager['user'], request), IBreadcrumb)
+    >>> crumb.name
+    u'My personal space'
+
+other's member space
+
+    >>> request.setPrincipal(auth.getPrincipal('zope.mgr'))
+    >>> crumb = sm.getMultiAdapter((manager['user'], request), IBreadcrumb)
+    >>> translate(crumb.name)
+    u"User's space"
+
+
+Uninstall manager
+-----------------
+
+    >>> factory.uninstall()
+    >>> 'people' in root
+    False
+
+    >>> sm.getUtility(IPersonalSpaceManager)
+    Traceback (most recent call last):
+    ...
+    ComponentLookupError: (<...IPersonalSpaceManager>, u'')
+
+    >>> endInteraction()
+    >>> setSite(None)
+    
