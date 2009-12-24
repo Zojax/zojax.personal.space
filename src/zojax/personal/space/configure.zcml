@@ -1,0 +1,156 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:i18n="http://namespaces.zope.org/i18n"
+   xmlns:zcml="http://namespaces.zope.org/zcml"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.personal.space">
+
+  <!-- permissions -->
+  <include file="permissions.zcml" />
+
+  <!-- member personal space -->
+  <interface
+     name="personal.space.type"
+     type="zojax.content.type.interfaces.IContentTypeType"
+     interface="zojax.personal.space.interfaces.IPersonalSpaceType" />
+
+  <zojax:content
+     name="personal.space"
+     title="Personal Space"
+     schema=".interfaces.IPersonalSpace"
+     class=".space.PersonalSpace"
+     containers="personal.spaces"
+     contains="zojax.content.space.interfaces.ISpaceContentType"
+     type=".interfaces.IPersonalSpaceType
+	   zojax.content.type.interfaces.IInactiveType"
+     permission="zojax.ManageSpaceManager" />
+
+  <class class=".space.PersonalSpace">
+    <implements interface="zojax.extensions.interfaces.IExtensible" />
+    <implements
+       interface="zojax.content.type.interfaces.ISearchableContent" />
+    <implements
+       interface="zojax.content.type.interfaces.IContainerContentsAware" />
+    <implements
+       interface="zojax.content.attachment.interfaces.IAttachmentsAware" />
+    <implements
+       interface="zojax.ownership.interfaces.IOwnerAware" />
+    <implements
+       interface="zope.app.container.interfaces.IContainerNamesContainer" />
+
+    <require
+       permission="zope.Public"
+       interface=".interfaces.IPersonalSpace" />
+
+    <require
+       permission="zope.View"
+       interface="zope.app.container.interfaces.IReadContainer" />
+
+    <require
+       permission="zojax.ModifyContent"
+       set_attributes="anonymous"
+       set_schema=".interfaces.IPersonalSpace"
+       interface="zope.app.container.interfaces.IWriteContainer" />
+  </class>
+
+  <subscriber handler=".space.personalSpaceAdded" />
+
+  <subscriber handler=".space.personalProfileModified" />
+
+  <adapter factory=".space.personalSpaceSearchableText" />
+
+  <permissions for=".interfaces.IPersonalSpace" name="personal.space" />
+
+  <adapter
+     name="space.permissions"
+     factory=".spacepermissions.SpacePermissions" />
+
+  <!-- personal workspace settings -->
+  <zojax:preferenceGroup
+     id="personalspace"
+     title="Personal space"
+     description="Personal space configuration."
+     schema=".interfaces.IPersonalSpaceSettings"
+     class=".preference.PersonalSpaceSettings" />
+
+  <!-- personal space manager -->
+  <zojax:content
+     name="personal.spaces"
+     title="Personal Spaces"
+     class=".manager.PersonalSpaceManager"
+     schema=".interfaces.IPersonalSpaceManager"
+     description="Personal Space Manager manages the assignments of spaces to principals."
+     contains="personal.space"
+     containers="zojax.content.space.interfaces.IRootSpaceType"
+     type="zojax.content.type.interfaces.IInactiveType
+	   zojax.content.space.interfaces.ISpaceContentType"
+     permission="zojax.ManageSpaceManager" />
+
+  <class class=".manager.PersonalSpaceManager">
+    <implements
+       interface="zojax.catalog.interfaces.ISearchContext" />
+    <implements
+       interface="zojax.extensions.interfaces.IExtensible" />
+    <implements
+       interface="zojax.content.type.interfaces.ISearchableContent" />
+    <implements
+       interface="zojax.content.type.interfaces.IRenameNotAllowed" />
+    <implements 
+       interface="zojax.content.type.interfaces.IUnremoveableContent" />
+    <implements
+       interface="zojax.content.type.interfaces.IContainerContentsAware" />
+
+    <require
+       permission="zojax.ManageSpaceManager"
+       attributes="assignments"
+       set_schema=".interfaces.IPersonalSpaceManager
+                   .interfaces.IPersonalWorkspacesManagement"
+       interface="zope.app.container.interfaces.IWriteContainer" />
+
+    <require
+       permission="zope.View"
+       interface=".interfaces.IPersonalSpaceManager
+                  .interfaces.IPersonalWorkspacesManagement
+		              zope.app.container.interfaces.IReadContainer" />
+  </class>
+
+  <adapter factory=".manager.getPersonalSpace" />
+  <subscriber handler=".manager.personalSpaceMoved" />
+  <subscriber handler=".manager.principalRemovingHandler" />
+
+  <adapter factory=".manager.getPersonalWorkspacesManagement" />
+
+  <utility
+     name="zojax.personal.space"
+     factory=".manager.PersonalSpaceService" />
+
+  <!-- personal space manager workspace -->
+  <adapter
+     name="people"
+     factory=".workspace.PersonalSpaceManagerWorkspace" />
+
+  <!-- support sorting -->
+  <class class=".manager.PersonalSpaceManager"
+	 zcml:condition="installed zojax.content.sorting">
+    <implements interface="zojax.content.sorting.interfaces.ISortable" />
+  </class>
+  
+  <!-- vocabularies -->
+  <utility
+     name="personal.space.workspaces"
+     factory=".vocabulary.PersonalWorkspaces" />
+
+  <utility
+     name="personal.space.enabledworkspaces"
+     factory=".vocabulary.EnabledPersonalWorkspaces" />
+
+  <!-- portlets -->
+  <include package=".portlets" />
+
+  <!-- browser views -->
+  <include package=".browser" />
+
+  <!-- translations -->
+  <i18n:registerTranslations directory="locales"/>
+
+</configure>

@@ -1,0 +1,23 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zojax.personal.space">
+
+  <zojax:pagelet
+     name="personalportlets"
+     type="form.subform"
+     for="..interfaces.IPersonalSpaceManager
+	  zojax.content.forms.interfaces.IPresentationStep"
+     template="portletmanager.pt"
+     class=".portletmanager.PortletManagers"
+     permission="zojax.ManagePortlets"
+     provides="zojax.layoutform.interfaces.IPageletFormView"
+     weight="210" />
+
+  <subscriber
+     factory=".portletmanager.PortletManagersPublisher"
+     for="zojax.content.forms.interfaces.IPresentationStep *"
+     provides="zojax.wizard.interfaces.IPublisherPlugin" />
+
+</configure>

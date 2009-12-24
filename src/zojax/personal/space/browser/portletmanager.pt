@@ -1,0 +1,17 @@
+<tal:block i18n:domain="zojax.personal.space"
+     tal:define="url view/context0/@@absolute_url">
+  <h2>Personal Space Portlets Configuration</h2>
+
+  <div class="z-form-fieldset" tal:repeat="workspace view/managers">
+    <h3 tal:content="workspace/title" i18n:translate=""></h3>
+    <div class="z-page-description" tal:content="workspace/description"></div>
+
+    <ul class="z-listing">
+      <li tal:repeat="item workspace/managers">
+        <a tal:attributes="href string:$url/${item/name}/"
+           tal:content="item/title"></a>
+        <div class="byline" tal:content="item/description"></div>
+      </li>
+    </ul>
+  </div>
+</tal:block>

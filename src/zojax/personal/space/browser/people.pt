@@ -1,0 +1,50 @@
+<div class="personalspace-manager" i18n:domain="zojax.personal.space">
+  <div class="personalspace-search" tal:condition="view/hasSpaces">
+    <form action="index.html" method="post" >
+      <input type="text" name="form.searchText"
+	     tal:attributes="value request/form.searchText|nothing" />
+      <input type="submit" class="z-form-button"
+	     name="form.search" value="Search for a person" />
+      <input type="submit" class="z-form-cancelbutton"
+	     name="form.search.clear" value="Clear"
+	     tal:condition="request/form.searchText|nothing" />
+    </form>
+  </div>
+
+  <tal:block condition="view/batch"
+	     content="structure view/batch/@@pagelet/batch.view" />
+
+  <tal:block tal:repeat="uid view/batch"
+	     tal:define="url context/@@absolute_url;
+			 dummy resourcepackage:zojax-workspace">
+    <div class="personalspace-memberinfo"
+	 tal:define="info python:view.getMemberInfo(uid);
+		     userurl string:$url/${info/id|nothing}/"
+	 tal:condition="info">
+      <dl>
+	<dt>
+	  <a tal:attributes="href userurl;
+			     title info/manager">
+	    <img tal:condition="not:info/default"
+		 tal:attributes="width info/imagex; height info/imagey;
+				 src info/photo" />
+	    <img tal:condition="info/default"
+		 tal:attributes="width info/imagex; height info/imagey;
+				 src context/++resource++profileEmptyImage.png" />
+	  </a>
+	</dt>
+	<dd>
+	  <div>
+	    <a tal:attributes="href userurl; title info/description"
+               tal:content="info/title"></a>
+	  </div>
+	  Joined on
+	  <tal:block condition="info/joined"
+		     content="structure formatter:date,medium:info/joined" />
+	  <tal:block condition="not:info/joined"
+		     i18n:translate="">Unknown</tal:block>
+	</dd>
+      </dl>
+    </div>
+  </tal:block>
+</div>

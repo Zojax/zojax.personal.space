@@ -1,0 +1,135 @@
+======================
+Personal Space Manager
+======================
+ 
+   >>> from zope import component, interface, event
+   >>> from zope.lifecycleevent import ObjectCreatedEvent
+   >>> from zope.interface.verify import verifyClass, verifyObject
+   >>> from zope.app.security.interfaces import IAuthentication
+   >>> from zope.app.component.interfaces import ISite
+   >>> from zope.app.component.hooks import setSite
+   >>> from zope.app.component.site import SiteManagerContainer, LocalSiteManager
+   >>> from zope.app.container.sample import SampleContainer
+   >>> from zojax.personal.space import interfaces
+   >>> from zojax.personal.space.manager import PersonalSpaceManager
+   >>> from zojax.principal.profile.interfaces import IPersonalProfile
+
+   >>> auth = component.getUtility(IAuthentication)
+   >>> getPrincipal = auth.getPrincipal
+
+   >>> verifyClass(interfaces.IPersonalSpaceManager, PersonalSpaceManager)
+   True
+
+   >>> manager = PersonalSpaceManager()
+   >>> verifyObject(interfaces.IPersonalSpaceManager, manager)
+   True
+
+We should register manager as utility   
+
+   >>> component.provideUtility(manager, interfaces.IPersonalSpaceManager)
+
+   >>> space = manager.getPersonalSpace(getPrincipal('prin1'))
+   >>> interfaces.IPersonalSpace.providedBy(space)
+   True
+
+Owner of this space should be principal
+
+   >>> from zojax.ownership.interfaces import IOwnership
+   >>> IOwnership(space).ownerId == 'prin1'
+   True
+
+We can get personal space for principal
+
+   >>> class Site(SampleContainer, SiteManagerContainer):
+   ...     pass
+
+   >>> site = Site()
+   >>> site.setSiteManager(LocalSiteManager(site))
+   >>> interface.alsoProvides(site, ISite)
+   >>> site['people'] = manager
+   >>> setSite(site)
+
+   >>> prin = getPrincipal('prin1')
+
+   >>> interfaces.IPersonalSpace(prin)
+   <zojax.personal.space.space.PersonalSpace ...>
+
+   >>> from zojax.principal.profile.interfaces import IPersonalSpaceService
+   >>> service = component.getUtility(
+   ...     IPersonalSpaceService, "zojax.personal.space")
+
+   >>> service.queryPersonalSpace(prin) is interfaces.IPersonalSpace(prin)
+   True
+
+   >>> setSite(None)
+
+Personal space for anonymous
+
+   >>> from zope.app.security.interfaces import IUnauthenticatedPrincipal
+   >>> from zojax.security.utils import getPrincipal
+   >>> anon = getPrincipal('anon')
+   >>> IUnauthenticatedPrincipal.providedBy(anon)
+   True
+   >>> interfaces.IPersonalSpace(anon, None) is None
+   True
+
+   >>> manager.getPersonalSpace(anon) is None
+   True
+
+   >>> manager.getPersonalSpaceById('anon') is None
+   True
+
+
+Get principal id for personal space
+
+   >>> space = manager.getPersonalSpace(getPrincipal('prin2'))
+   >>> space.__name__
+   u'principal2' 
+
+   >>> manager.getPrincipal('principal2').id
+   'prin2'
+
+   >>> space is manager.getPersonalSpaceById('prin2')
+   True
+
+
+Home folder renaming
+
+   >>> from zope.copypastemove.interfaces import IContainerItemRenamer
+   >>> renamer = IContainerItemRenamer(manager)
+   >>> renamer.renameItem('principal2', 'principal3')
+
+   >>> space = manager.getPersonalSpace(getPrincipal('prin2'))
+   >>> space.__name__
+   u'principal3'
+
+   >>> 'principal2' in manager
+   False
+
+
+Unassign folder
+
+   >>> manager.unassignPersonalSpace(getPrincipal('prin2'))
+   >>> 'principal2' in manager
+   False
+
+   >>> manager.unassignPersonalSpace(getPrincipal('prin2'))
+
+
+Remove principal
+
+   >>> space = manager.getPersonalSpace(getPrincipal('prin1'))
+   >>> space.__name__
+   u'principal1'
+
+   >>> from zojax.authentication.interfaces import PrincipalRemovingEvent
+   >>> event.notify(PrincipalRemovingEvent(getPrincipal('prin1')))
+
+   >>> 'principal1' in manager
+   False
+
+
+just test
+
+   >>> manager.getPrincipal('unknown') is None
+   True
