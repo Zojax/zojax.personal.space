@@ -22,7 +22,7 @@
      containers="personal.spaces"
      contains="zojax.content.space.interfaces.ISpaceContentType"
      type=".interfaces.IPersonalSpaceType
-	   zojax.content.type.interfaces.IInactiveType"
+     zojax.content.type.interfaces.IInactiveType"
      permission="zojax.ManageSpaceManager" />
 
   <class class=".space.PersonalSpace">
@@ -83,7 +83,7 @@
      contains="personal.space"
      containers="zojax.content.space.interfaces.IRootSpaceType"
      type="zojax.content.type.interfaces.IInactiveType
-	   zojax.content.space.interfaces.ISpaceContentType"
+     zojax.content.space.interfaces.ISpaceContentType"
      permission="zojax.ManageSpaceManager" />
 
   <class class=".manager.PersonalSpaceManager">
@@ -95,7 +95,7 @@
        interface="zojax.content.type.interfaces.ISearchableContent" />
     <implements
        interface="zojax.content.type.interfaces.IRenameNotAllowed" />
-    <implements 
+    <implements
        interface="zojax.content.type.interfaces.IUnremoveableContent" />
     <implements
        interface="zojax.content.type.interfaces.IContainerContentsAware" />
@@ -111,7 +111,7 @@
        permission="zope.View"
        interface=".interfaces.IPersonalSpaceManager
                   .interfaces.IPersonalWorkspacesManagement
-		              zope.app.container.interfaces.IReadContainer" />
+                  zope.app.container.interfaces.IReadContainer" />
   </class>
 
   <adapter factory=".manager.getPersonalSpace" />
@@ -131,10 +131,10 @@
 
   <!-- support sorting -->
   <class class=".manager.PersonalSpaceManager"
-	 zcml:condition="installed zojax.content.sorting">
+   zcml:condition="installed zojax.content.sorting">
     <implements interface="zojax.content.sorting.interfaces.ISortable" />
   </class>
-  
+
   <!-- vocabularies -->
   <utility
      name="personal.space.workspaces"
@@ -152,5 +152,11 @@
 
   <!-- translations -->
   <i18n:registerTranslations directory="locales"/>
+
+  <!-- generations -->
+  <utility
+     name="zojax.personal.space"
+     provides="zope.app.generations.interfaces.ISchemaManager"
+     component=".generations.schemaManager" />
 
 </configure>

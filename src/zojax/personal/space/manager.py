@@ -11,6 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from zojax.site.interfaces import ISite
 """
 
 $Id$
@@ -34,6 +35,7 @@ from zojax.security.utils import getPrincipal, checkPermissionForPrincipal
 from zojax.ownership.interfaces import IOwnership
 from zojax.authentication.interfaces import IPrincipalRemovingEvent
 from zojax.principal.profile.interfaces import IPersonalSpaceService
+from zope.traversing.interfaces import IContainmentRoot
 
 from space import PersonalSpace
 from interfaces import _, \
@@ -115,7 +117,6 @@ class PersonalSpaceManager(ContentContainer):
     def unassignPersonalSpace(self, principal, delete=True):
         if principal.id not in self.assignments:
             return
-
         name = self.assignments[principal.id]
         del self.assignments[principal.id]
         del self.bassignments[name]
@@ -187,8 +188,14 @@ def personalSpaceMoved(space, event):
 
 @component.adapter(IPrincipalRemovingEvent)
 def principalRemovingHandler(ev):
-    for name, manager in getUtilitiesFor(IPersonalSpaceManager):
-        manager.unassignPersonalSpace(ev.principal)
+    site = getSite()
+    if site is not None and site.__parent__ is not None:
+        sites = [site.__parent__] + [site for site in site.__parent__.values() if ISite.providedBy(site)]
+    else:
+        sites = [site]
+    for site in sites:
+        for name, manager in getUtilitiesFor(IPersonalSpaceManager, context=site):
+            manager.unassignPersonalSpace(ev.principal)
 
 
 class PersonalSpaceService(object):
