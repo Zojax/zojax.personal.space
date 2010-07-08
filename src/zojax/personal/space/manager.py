@@ -189,8 +189,10 @@ def personalSpaceMoved(space, event):
 @component.adapter(IPrincipalRemovingEvent)
 def principalRemovingHandler(ev):
     site = getSite()
-    if site is not None and site.__parent__ is not None:
-        sites = [site.__parent__] + [site for site in site.__parent__.values() if ISite.providedBy(site)]
+    if site is not None:
+        if site.__parent__ is not None:
+            site = site.__parent__
+        sites = [site] + [site for site in site.values() if ISite.providedBy(site)]
     else:
         sites = [site]
     for site in sites:
