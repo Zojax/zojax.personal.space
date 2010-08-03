@@ -191,9 +191,11 @@ def principalRemovingHandler(ev):
     site = getSite()
     sites = [site]
     if site is not None:
-        if site.__parent__ is not None:
-            site = site.__parent__
-            sites = [site] + [site for site in site.values() if ISite.providedBy(site)]
+        parent = site.__parent__
+        if parent is not None:
+            sites = [parent] + [site for site in parent.values() if ISite.providedBy(site)]
+    if site not in sites:
+        sites.append(site)
     for site in sites:
         for name, manager in getUtilitiesFor(IPersonalSpaceManager, context=site):
             manager.unassignPersonalSpace(ev.principal)
