@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from zojax.site.interfaces import ISite
 """
 
 $Id$
@@ -28,6 +27,8 @@ from zope.app.component.hooks import getSite
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.container.interfaces import INameChooser, IObjectMovedEvent
 
+from zojax.site.interfaces import ISite
+from zojax.portal.interfaces import IPortal
 from zojax.content.type.container import ContentContainer
 from zojax.content.type.interfaces import IContentType, IContentTypeChecker
 
@@ -188,13 +189,11 @@ def personalSpaceMoved(space, event):
 
 @component.adapter(IPrincipalRemovingEvent)
 def principalRemovingHandler(ev):
-    site = getSite()
-    if site is not None:
-        if site.__parent__ is not None:
+    sites = [getSite()]
+    if sites[0] is not None:
+        if IPortal.providedBy(site.__parent__):
             site = site.__parent__
-        sites = [site] + [site for site in site.values() if ISite.providedBy(site)]
-    else:
-        sites = [site]
+            sites = [site] + [site for site in site.values() if ISite.providedBy(site)]
     for site in sites:
         for name, manager in getUtilitiesFor(IPersonalSpaceManager, context=site):
             manager.unassignPersonalSpace(ev.principal)
