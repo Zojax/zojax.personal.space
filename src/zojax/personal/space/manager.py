@@ -24,10 +24,10 @@ from zope.lifecycleevent import ObjectCreatedEvent
 from zope.security.proxy import removeSecurityProxy
 from zope.security.interfaces import IGroup, IPrincipal
 from zope.app.component.hooks import getSite
+from zope.app.component.interfaces import ISite
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.container.interfaces import INameChooser, IObjectMovedEvent
 
-from zojax.site.interfaces import ISite
 from zojax.content.type.container import ContentContainer
 from zojax.content.type.interfaces import IContentType, IContentTypeChecker
 
