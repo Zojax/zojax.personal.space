@@ -1,0 +1,9 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope">
+
+  <utility
+     name="listInPeopleView"
+     component=".indexes.listInPeopleViewIndex"
+     provides="zojax.catalog.interfaces.ICatalogIndexFactory" />
+
+</configure>

@@ -50,6 +50,7 @@ class PeopleView(object):
                 query = {
                     'type': {'any_of': ('personal.space',)},
                     'searchableText': s,
+                    'listInPeopleView': {'any_of':(True,)},
                     'searchContext':(context,),
                     'sort_on': 'title'}
 
@@ -68,6 +69,7 @@ class PeopleView(object):
 
         results = getUtility(ICatalog).searchResults(
             type = {'any_of': ('personal.space',)},
+            listInPeopleView = {'any_of':(True,)},
             searchContext = (context,), sort_on='title')
 
         self.batch = Batch(results, size=context.pagecount,

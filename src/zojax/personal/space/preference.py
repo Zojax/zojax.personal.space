@@ -53,6 +53,14 @@ class PersonalSpaceSettings(object):
     @setproperty
     def anonymous(self, value):
         self.space.anonymous = value
+        
+    @getproperty
+    def listing(self):
+        return self.space.listing
+
+    @setproperty
+    def listing(self, value):
+        self.space.listing = value
 
     @property
     def shortname(self):

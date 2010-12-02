@@ -36,6 +36,8 @@ class PersonalSpace(ContentContainer):
     interface.implements(IPersonalSpace)
 
     anonymous = True
+    
+    listing = True
 
     @property
     def id(self):

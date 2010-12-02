@@ -35,7 +35,9 @@ class IPersonalSpace(ISpace):
     principalId = interface.Attribute('Principal id')
 
     anonymous = interface.Attribute('Anonymous access')
-
+    
+    listing = interface.Attribute('List in people view')
+    
 
 class IPersonalSpaceType(interface.Interface):
     """ personal space content type """
@@ -57,6 +59,12 @@ class IPersonalSpaceSettings(interface.Interface):
     anonymous = schema.Bool(
         title = _(u'Anonymous view'),
         description = _('Allow non-members to view my profile.'),
+        default = True,
+        required = False)
+    
+    listing = schema.Bool(
+        title = _(u'List space in people view'),
+        description = _('Allow listing this space in people view.'),
         default = True,
         required = False)
 

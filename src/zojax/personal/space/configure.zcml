@@ -149,6 +149,9 @@
 
   <!-- browser views -->
   <include package=".browser" />
+  
+  <!-- indexes -->
+  <include file="indexes.zcml" />
 
   <!-- translations -->
   <i18n:registerTranslations directory="locales"/>

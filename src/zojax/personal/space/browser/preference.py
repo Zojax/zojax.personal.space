@@ -61,7 +61,8 @@ class PersonalSpaceSettings(PageletEditForm):
         return {'title': context.title,
                 'description': context.description,
                 'shortname': context.shortname,
-                'anonymous': context.anonymous}
+                'anonymous': context.anonymous,
+                'listing': context.listing}
 
     shortName = None
 
@@ -71,6 +72,7 @@ class PersonalSpaceSettings(PageletEditForm):
         context.title = data['title']
         context.description = data['description']
         context.anonymous = data['anonymous']
+        context.listing = data['listing']
 
         if context.shortname != data['shortname']:
             self.shortName = data['shortname']
