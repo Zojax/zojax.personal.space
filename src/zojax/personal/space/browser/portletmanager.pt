@@ -1,6 +1,6 @@
 <tal:block i18n:domain="zojax.personal.space"
      tal:define="url view/context0/@@absolute_url">
-  <h2>Personal Space Portlets Configuration</h2>
+  <h2 i18n:translate="">Personal Space Portlets Configuration</h2>
 
   <div class="z-form-fieldset" tal:repeat="workspace view/managers">
     <h3 tal:content="workspace/title" i18n:translate=""></h3>

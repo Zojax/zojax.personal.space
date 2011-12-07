@@ -4,8 +4,10 @@
       <input type="text" name="form.searchText"
 	     tal:attributes="value request/form.searchText|nothing" />
       <input type="submit" class="z-form-button"
+             i18n:attributes="value"
 	     name="form.search" value="Search for a person" />
       <input type="submit" class="z-form-cancelbutton"
+             i18n:attributes="value"
 	     name="form.search.clear" value="Clear"
 	     tal:condition="request/form.searchText|nothing" />
     </form>
@@ -38,7 +40,7 @@
 	    <a tal:attributes="href userurl; title info/description"
                tal:content="info/title"></a>
 	  </div>
-	  Joined on
+	  <tal:block i18n:translate="">Joined on</tal:block>
 	  <tal:block condition="info/joined"
 		     content="structure formatter:date,medium:info/joined" />
 	  <tal:block condition="not:info/joined"
