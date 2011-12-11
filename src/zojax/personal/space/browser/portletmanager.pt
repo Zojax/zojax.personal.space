@@ -3,7 +3,7 @@
   <h2 i18n:translate="">Personal Space Portlets Configuration</h2>
 
   <div class="z-form-fieldset" tal:repeat="workspace view/managers">
-    <h3 tal:content="workspace/title" i18n:translate=""></h3>
+    <h3 tal:content="workspace/title"></h3>
     <div class="z-page-description" tal:content="workspace/description"></div>
 
     <ul class="z-listing">
