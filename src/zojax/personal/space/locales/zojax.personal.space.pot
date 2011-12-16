@@ -1,0 +1,214 @@
+##############################################################################
+#
+# Copyright (c) 2003-2004 Zope Corporation and Contributors.
+# All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+msgid ""
+msgstr ""
+"Project-Id-Version: Development/Unknown\n"
+"POT-Creation-Date: Sun Dec 11 10:39:07 2011\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Zope 3 Developers <zope3-dev@zope.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: zope/app/locales/extract.py\n"
+
+#: src/zojax/personal/space/browser/people.pt:43
+msgid "Joined on"
+msgstr ""
+
+#: src/zojax/personal/space/browser/people.pt:46
+msgid "Unknown"
+msgstr ""
+
+#: src/zojax/personal/space/browser/people.pt:6
+msgid "Search for a person"
+msgstr ""
+
+#: src/zojax/personal/space/browser/people.pt:9
+msgid "Clear"
+msgstr ""
+
+#: src/zojax/personal/space/browser/people.py:67
+msgid "Please enter one or more words for search."
+msgstr ""
+
+#: src/zojax/personal/space/browser/portletmanager.pt:3
+msgid "Personal Space Portlets Configuration"
+msgstr ""
+
+#: src/zojax/personal/space/browser/preference.py:102
+msgid "Content name already in use."
+msgstr ""
+
+#: src/zojax/personal/space/browser/preference.py:36
+msgid "Short Name"
+msgstr ""
+
+#: src/zojax/personal/space/browser/preference.py:37
+msgid "Should not contain spaces, underscores or mixed case. Short Name is part of the item's web address."
+msgstr ""
+
+#: src/zojax/personal/space/browser/space.pt:12
+msgid "Back to members listing"
+msgstr ""
+
+#: src/zojax/personal/space/browser/space.pt:7
+msgid "You don't have permission to view member's personal space."
+msgstr ""
+
+#: src/zojax/personal/space/browser/workspace.py:35
+#: src/zojax/personal/space/interfaces.py:146
+msgid "Workspaces"
+msgstr ""
+
+#: src/zojax/personal/space/browser/workspace.py:36
+msgid "Workspaces management"
+msgstr ""
+
+#: src/zojax/personal/space/configure.zcml:17
+msgid "Personal Space"
+msgstr ""
+
+#: src/zojax/personal/space/configure.zcml:69
+msgid "Personal space configuration."
+msgstr ""
+
+#: src/zojax/personal/space/configure.zcml:77
+msgid "Personal Space Manager manages the assignments of spaces to principals."
+msgstr ""
+
+#: src/zojax/personal/space/configure.zcml:77
+msgid "Personal Spaces"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:106
+msgid "Page count"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:107
+msgid "Number of people per page."
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:112
+msgid "Allow searching"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:147
+msgid "Select workspaces for personal space."
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:153
+msgid "Workspaces sorting and visibility"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:154
+msgid "Configure what workspaces have to be shown and in what order"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:161
+msgid "Default workspace"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:162
+msgid "Select default workspace for personal space."
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:50
+#: src/zojax/personal/space/interfaces.py:85
+msgid "Title"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:51
+msgid "Title of personal space"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:55
+#: src/zojax/personal/space/interfaces.py:90
+msgid "Description"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:56
+msgid "Description of personal space"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:60
+msgid "Anonymous view"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:61
+msgid "Allow non-members to view my profile."
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:66
+msgid "List space in people view"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:67
+msgid "Allow listing this space in people view."
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:86
+msgid "Title of personal space workspace"
+msgstr ""
+
+#: src/zojax/personal/space/interfaces.py:91
+msgid "Description of personal space workspace"
+msgstr ""
+
+#: src/zojax/personal/space/permissions.zcml:11
+msgid "Manage space manager"
+msgstr ""
+
+#: src/zojax/personal/space/permissions.zcml:15
+msgid "Manage personal space"
+msgstr ""
+
+#: src/zojax/personal/space/permissions.zcml:6
+msgid "Member with this permission will have personal space."
+msgstr ""
+
+#: src/zojax/personal/space/permissions.zcml:6
+#: src/zojax/personal/space/configure.zcml:69
+#: src/zojax/personal/space/browser/personalbar.pt:1
+msgid "Personal space"
+msgstr ""
+
+#: src/zojax/personal/space/portlets/configure.zcml:14
+msgid "Personal space right column"
+msgstr ""
+
+#: src/zojax/personal/space/portlets/configure.zcml:21
+msgid "Listing of context actions."
+msgstr ""
+
+#: src/zojax/personal/space/portlets/configure.zcml:21
+msgid "Actions"
+msgstr ""
+
+#: src/zojax/personal/space/portlets/configure.zcml:8
+msgid "Personal space left column"
+msgstr ""
+
+#: src/zojax/personal/space/tests/workspace.pt:1
+msgid "Yoy are in test workspace."
+msgstr ""
+
+#: src/zojax/personal/space/workspace.py:37
+msgid "Personal spaces for members."
+msgstr ""
+
+#: src/zojax/personal/space/workspace.py:47
+msgid "People"
+msgstr ""
+
