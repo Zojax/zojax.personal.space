@@ -85,5 +85,7 @@ class personalSpaceSearchableText(ContentSearchableText):
 
     def getSearchableText(self):
         text = super(personalSpaceSearchableText, self).getSearchableText()
-
-        return getattr(IPersonalProfile(self.content.principal, None), 'title', '') + u' ' + text
+        profile = IPersonalProfile(self.content.principal, None)
+        if profile:
+            return getattr(profile, 'title', '') + u' ' + text
+        return text
